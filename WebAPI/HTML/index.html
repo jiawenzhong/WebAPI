@@ -1,0 +1,62 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Student App</title>
+</head>
+<body>
+    <div>
+        <h2>All Students</h2>
+        <ol id="students"></ol>
+    </div>
+   <div>
+       <h2>Create a student</h2>
+       <p>Student Name: <input type="text" id="studName" size="20" /></p>
+       <input id="add-student" type="button" value="Add" />
+   </div>
+   
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-2.0.3.min.js"></script>
+    <script>
+        var url = 'http://localhost:65509/api/student';
+        $(document).ready(function () {
+            // Send an AJAX request
+            $.getJSON(url)
+                .done(function (data) {
+                    // On success, 'data' contains a list of products.
+                    $.each(data, function (key, item) {
+                        // Add a list item for the product.
+                        $('<li>', { text: formatItem(item) }).appendTo($('#students'));
+                    });
+                });
+        });
+
+       $('#add-student').on('click', function () {
+                
+                $.ajax({
+                    url: 'http://localhost:65509/api/student',
+                    dataType: 'json',//data type is json
+                    type: 'post',//post request
+                    contentType: 'application/json',//content contains json format data
+                    //get data from input
+                    data: JSON.stringify({ "name": $('#studName').val() }),
+                    processData: false,
+                    //finish posting data, so append it to list
+                    success: function (data, textStatus, jQxhr) {
+                        $('<li>', { text: formatItem(data) }).appendTo($('#students'));
+                        $('#studName').val('');//clear the text box
+                    },
+                    //catch error
+                    error: function (jqXhr, textStatus, errorThrown) {
+                        console.log(errorThrown);
+                    }
+                });
+            });
+
+        //format the name
+        function formatItem(item) {
+            return item.name;
+        }       
+    </script>
+   
+</body>
+</html>
